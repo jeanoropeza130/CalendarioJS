@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario - JavaScript</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <section>
+        <div> </div>
+        <button id='up'>👆</button>
+        <button id='down'>👇</button>
+    </section>
+
+<script>
+const createCalendar = ({locale, year}) => {
+    //Semana
+    const weekdays = [ ...Array(7).keys()];
+        const intlWeekDay = new Intl.DateTimeFormat(locale,{ weekday: 'short' });
+    
+    const el = document.querySelector('div');
+    
+    //Boton Baja
+    document.getElementById('up').addEventListener('click', () => {
+      el.scrollTo({ top: el.scrollTop - window.innerHeight, behavior: 'smooth'})
+        })
+    
+    //Boton Sube
+    document.getElementById('down').addEventListener('click', () => {
+        el.scrollTo({ top: el.scrollTop + window.innerHeight, behavior: 'smooth'})
+        })
+
+        const weekDaysName = weekdays.map(weekDayIndex => {
+           const date = new Date(2021, 10, weekDayIndex + 1);
+            const weekDayName = intlWeekDay.format(date);
+           return weekDayName
+        });
+    
+        const renderedWeekDays = weekDaysName.map
+        (weekDayName => `<li class="day-name">${weekDayName}
+        </li>`).join('');
+    //Meses
+        const months = [ ...Array(12).keys()];
+        const intl = new Intl.DateTimeFormat(locale, {
+            month: 'long'});
+    
+        const calendar = months.map(monthKey =>{
+            const monthName = intl.format(new Date
+            (year, monthKey));
+    
+            const nextMonthIndex = monthKey + 1;
+            const daysOfMonth = new Date(year,
+            nextMonthIndex, 0).getDate();
+    
+            const startsOn = new Date(year, monthKey, 1)
+            .getDay();
+    
+            return {
+                monthName,
+                daysOfMonth,
+                startsOn
+            }
+        })
+    
+    
+        const html = calendar.map(({daysOfMonth,monthName,
+        startsOn}) => {
+            const days = [ ...Array(daysOfMonth).keys()]
+    
+            const firstDayAttributes = `class='first-day'
+            style='--first-day-start: ${startsOn}'`;
+        
+            const renderedDays = days.map((day, index) =>
+            `<li ${index === 0 ? firstDayAttributes :''}> ${day +1}</li>`
+            ).join('')
+    
+            const title = `<h1>${monthName} ${year}</h1>`
+    
+            return `<div class='month'>${title}<ol>
+                ${renderedWeekDays} ${renderedDays}</ol></div>`
+        }).join('');
+    
+       el.innerHTML = html
+    }
+    
+    createCalendar({year: 2021, locale: 'es-ES'});
+</script>
+</body>
+</html>
